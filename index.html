@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Periodic Table Lookup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+            padding: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        input, button {
+            font-size: 1.2em;
+            padding: 10px;
+            margin: 10px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #ffffff;
+        }
+        img {
+            width: 100px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Periodic Table Lookup</h1>
+    <p>Enter an atomic number to find the corresponding element.</p>
+    <input type="number" id="atomicNumber" placeholder="Enter Atomic Number">
+    <button onclick="lookupElement()">Find Element</button>
+
+    <div id="result" class="result" style="display: none;"></div>
+
+    <script>
+        const periodicTable = {
+            1: { name: 'Hydrogen', class: 'Non-metal', ionizationEnergy: 13.598, electronegativity: 2.20, atomicRadius: 53, electronAffinity: 72.8, electronConfiguration: '1s1', chemicalReactivity: 'Highly reactive', metalOrNonMetal: 'Non-metal', group: 'Group 1 (Alkali metals)' },
+            2: { name: 'Helium', class: 'Noble gas', ionizationEnergy: 24.587, electronegativity: 'Not applicable', atomicRadius: 31, electronAffinity: 0, electronConfiguration: '1s2', chemicalReactivity: 'Inert', metalOrNonMetal: 'Non-metal', group: 'Group 18 (Noble gases)' },
+            3: { name: 'Lithium', class: 'Alkali metal', ionizationEnergy: 5.3917, electronegativity: 0.98, atomicRadius: 167, electronAffinity: 59.6, electronConfiguration: '[He] 2s1', chemicalReactivity: 'Highly reactive', metalOrNonMetal: 'Metal', group: 'Group 1 (Alkali metals)' },
+            4: { name: 'Beryllium', class: 'Alkaline earth metal', ionizationEnergy: 9.3227, electronegativity: 1.57, atomicRadius: 112, electronAffinity: 0, electronConfiguration: '[He] 2s2', chemicalReactivity: 'Moderately reactive', metalOrNonMetal: 'Metal', group: 'Group 2 (Alkaline earth metals)' },
+            5: { name: 'Boron', class: 'Metalloid', ionizationEnergy: 8.298, electronegativity: 2.04, atomicRadius: 87, electronAffinity: 27, electronConfiguration: '[He] 2s2 2p1', chemicalReactivity: 'Low reactivity', metalOrNonMetal: 'Metalloid', group: 'Group 13 (Boron group)' },
+            6: { name: 'Carbon', class: 'Non-metal', ionizationEnergy: 11.260, electronegativity: 2.55, atomicRadius: 67, electronAffinity: 153.9, electronConfiguration: '[He] 2s2 2p2', chemicalReactivity: 'Moderate reactivity', metalOrNonMetal: 'Non-metal', group: 'Group 14 (Carbon group)' },
+            7: { name: 'Nitrogen', class: 'Non-metal', ionizationEnergy: 14.534, electronegativity: 3.04, atomicRadius: 56, electronAffinity: 0, electronConfiguration: '[He] 2s2 2p3', chemicalReactivity: 'Low reactivity', metalOrNonMetal: 'Non-metal', group: 'Group 15 (Pnictogens)' },
+            8: { name: 'Oxygen', class: 'Non-metal', ionizationEnergy: 13.618, electronegativity: 3.44, atomicRadius: 60, electronAffinity: 140, electronConfiguration: '[He] 2s2 2p4', chemicalReactivity: 'Highly reactive', metalOrNonMetal: 'Non-metal', group: 'Group 16 (Chalcogens)' },
+            9: { name: 'Fluorine', class: 'Halogen', ionizationEnergy: 17.422, electronegativity: 3.98, atomicRadius: 50, electronAffinity: 328, electronConfiguration: '[He] 2s2 2p5', chemicalReactivity: 'Highly reactive', metalOrNonMetal: 'Non-metal', group: 'Group 17 (Halogens)' },
+            10: { name: 'Neon', class: 'Noble gas', ionizationEnergy: 21.564, electronegativity: 'Not applicable', atomicRadius: 38, electronAffinity: 0, electronConfiguration: '[He] 2s2 2p6', chemicalReactivity: 'Inert', metalOrNonMetal: 'Non-metal', group: 'Group 18 (Noble gases)' },
+            11: { name: 'Sodium', class: 'Alkali metal', ionizationEnergy: 5.139, electronegativity: 0.93, atomicRadius: 186, electronAffinity: 52.8, electronConfiguration: '[Ne] 3s1', chemicalReactivity: 'Highly reactive', metalOrNonMetal: 'Metal', group: 'Group 1 (Alkali metals)' },
+            12: { name: 'Magnesium', class: 'Alkaline earth metal', ionizationEnergy: 7.646, electronegativity: 1.31, atomicRadius: 160, electronAffinity: 0, electronConfiguration: '[Ne] 3s2', chemicalReactivity: 'Moderately reactive', metalOrNonMetal: 'Metal', group: 'Group 2 (Alkaline earth metals)' },
+            13: { name: 'Aluminum', class: 'Post-transition metal', ionizationEnergy: 5.986, electronegativity: 1.61, atomicRadius: 143, electronAffinity: 42.5, electronConfiguration: '[Ne] 3s2 3p1', chemicalReactivity: 'Moderately reactive', metalOrNonMetal: 'Metal', group: 'Group 13 (Boron group)' },
+            14: { name: 'Silicon', class: 'Metalloid', ionizationEnergy: 8.1517, electronegativity: 1.90, atomicRadius: 118, electronAffinity: 133.6, electronConfiguration: '[Ne] 3s2 3p2', chemicalReactivity: 'Low reactivity', metalOrNonMetal: 'Metalloid', group: 'Group 14 (Carbon group)' },
+            15: { name: 'Phosphorus', class: 'Non-metal', ionizationEnergy: 10.4867, electronegativity: 2.19, atomicRadius: 110, electronAffinity: 72, electronConfiguration: '[Ne] 3s2 3p3', chemicalReactivity: 'Moderately reactive', metalOrNonMetal: 'Non-metal', group: 'Group 15 (Pnictogens)' },
+            16: { name: 'Sulfur', class: 'Non-metal', ionizationEnergy: 10.36, electronegativity: 2.58, atomicRadius: 104, electronAffinity: 200, electronConfiguration: '[Ne] 3s2 3p4', chemicalReactivity: 'Highly reactive', metalOrNonMetal: 'Non-metal', group: 'Group 16 (Chalcogens)' },
+            17: { name: 'Chlorine', class: 'Halogen', ionizationEnergy: 12.967, electronegativity: 3.16, atomicRadius: 99, electronAffinity: 349, electronConfiguration: '[Ne] 3s2 3p5', chemicalReactivity: 'Highly reactive', metalOrNonMetal: 'Non-metal', group: 'Group 17 (Halogens)' },
+            18: { name: 'Argon', class: 'Noble gas', ionizationEnergy: 15.759, electronegativity: 'Not applicable', atomicRadius: 71, electronAffinity: 0, electronConfiguration: '[Ne] 3s2 3p6', chemicalReactivity: 'Inert', metalOrNonMetal: 'Non-metal', group: 'Group 18 (Noble gases)' },
+            19: { name: 'Potassium', class: 'Alkali metal', ionizationEnergy: 4.341, electronegativity: 0.82, atomicRadius: 227, electronAffinity: 48.4, electronConfiguration: '[Ar] 4s1', chemicalReactivity: 'Highly reactive', metalOrNonMetal: 'Metal', group: 'Group 1 (Alkali metals)' },
+            20: { name: 'Calcium', class: 'Alkaline earth metal', ionizationEnergy: 6.113, electronegativity: 1.00, atomicRadius: 197, electronAffinity: 2.37, electronConfiguration: '[Ar] 4s2', chemicalReactivity: 'Moderately reactive', metalOrNonMetal: 'Metal', group: 'Group 2 (Alkaline earth metals)' },
+            21: { name: 'Scandium', class: 'Transition metal', ionizationEnergy: 6.561, electronegativity: 1.36, atomicRadius: 162, electronAffinity: 18.7, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 3d1 4s2', chemicalReactivity: 'Reacts with water', metalOrNonMetal: 'Metal', group: 'Group 3 (Scandium group)' },
+            22: { name: 'Titanium', class: 'Transition metal', ionizationEnergy: 6.828, electronegativity: 1.54, atomicRadius: 147, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 3d2 4s2', chemicalReactivity: 'Highly resistant to corrosion', metalOrNonMetal: 'Metal', group: 'Group 4 (Titanium group)' },
+            23: { name: 'Vanadium', class: 'Transition metal', ionizationEnergy: 6.746, electronegativity: 1.63, atomicRadius: 134, electronAffinity: 50.9, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 3d3 4s2', chemicalReactivity: 'Reacts slowly with oxygen', metalOrNonMetal: 'Metal', group: 'Group 5 (Vanadium group)' },
+            24: { name: 'Chromium', class: 'Transition metal', ionizationEnergy: 6.766, electronegativity: 1.66, atomicRadius: 128, electronAffinity: 65.2, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 3d5 4s1', chemicalReactivity: 'Resistant to oxidation', metalOrNonMetal: 'Metal', group: 'Group 6 (Chromium group)' },
+            25: { name: 'Manganese', class: 'Transition metal', ionizationEnergy: 7.434, electronegativity: 1.55, atomicRadius: 127, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 3d5 4s2', chemicalReactivity: 'Reacts slowly with air', metalOrNonMetal: 'Metal', group: 'Group 7 (Manganese group)' },
+            26: { name: 'Iron', class: 'Transition metal', ionizationEnergy: 7.902, electronegativity: 1.83, atomicRadius: 126, electronAffinity: 15.7, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 3d6 4s2', chemicalReactivity: 'Reacts with oxygen to form rust', metalOrNonMetal: 'Metal', group: 'Group 8 (Iron group)' },
+            27: { name: 'Cobalt', class: 'Transition metal', ionizationEnergy: 7.880, electronegativity: 1.88, atomicRadius: 125, electronAffinity: 62.0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 3d7 4s2', chemicalReactivity: 'Reacts with air and acids', metalOrNonMetal: 'Metal', group: 'Group 9 (Cobalt group)' },
+            28: { name: 'Nickel', class: 'Transition metal', ionizationEnergy: 7.640, electronegativity: 1.91, atomicRadius: 124, electronAffinity: 111, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 3d8 4s2', chemicalReactivity: 'Reacts slowly with oxygen', metalOrNonMetal: 'Metal', group: 'Group 10 (Nickel group)' },
+            29: { name: 'Copper', class: 'Transition metal', ionizationEnergy: 7.726, electronegativity: 1.90, atomicRadius: 128, electronAffinity: 118, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 3d10 4s1', chemicalReactivity: 'Reacts with oxygen to form a greenish patina', metalOrNonMetal: 'Metal', group: 'Group 11 (Copper group)' },
+            30: { name: 'Zinc', class: 'Transition metal', ionizationEnergy: 9.394, electronegativity: 1.65, atomicRadius: 139, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 3d10 4s2', chemicalReactivity: 'Reacting with acids to release hydrogen', metalOrNonMetal: 'Metal', group: 'Group 12 (Zinc group)' },
+            31: { name: 'Gallium', class: 'Post-transition metal', ionizationEnergy: 5.999, electronegativity: 1.81, atomicRadius: 135, electronAffinity: 41.0, electronConfiguration: '1s2 2s2 2p6 3s2 3p1', chemicalReactivity: 'Reacts with oxygen and acids', metalOrNonMetal: 'Metal', group: 'Group 13 (Boron group)' },
+            32: { name: 'Germanium', class: 'Metalloid', ionizationEnergy: 7.900, electronegativity: 2.01, atomicRadius: 122, electronAffinity: 118.9, electronConfiguration: '1s2 2s2 2p6 3s2 3p2', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metalloid', group: 'Group 14 (Carbon group)' },
+            33: { name: 'Arsenic', class: 'Metalloid', ionizationEnergy: 9.788, electronegativity: 2.18, atomicRadius: 119, electronAffinity: 77.0, electronConfiguration: '1s2 2s2 2p6 3s2 3p3', chemicalReactivity: 'Reacts with metals and oxygen', metalOrNonMetal: 'Metalloid', group: 'Group 15 (Nitrogen group)' },
+            34: { name: 'Selenium', class: 'Non-metal', ionizationEnergy: 9.752, electronegativity: 2.55, atomicRadius: 120, electronAffinity: 194.9, electronConfiguration: '1s2 2s2 2p6 3s2 3p4', chemicalReactivity: 'Reacts with oxygen to form oxides', metalOrNonMetal: 'Non-metal', group: 'Group 16 (Oxygen group)' },
+            35: { name: 'Bromine', class: 'Halogen', ionizationEnergy: 11.814, electronegativity: 2.96, atomicRadius: 114, electronAffinity: 324.6, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p5', chemicalReactivity: 'Reacts with metals to form salts', metalOrNonMetal: 'Non-metal', group: 'Group 17 (Halogens)' },
+            36: { name: 'Krypton', class: 'Noble gas', ionizationEnergy: 14.000, electronegativity: null, atomicRadius: 103, electronAffinity: null, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6', chemicalReactivity: 'Non-reactive', metalOrNonMetal: 'Non-metal', group: 'Group 18 (Noble gases)' },
+            37: { name: 'Rubidium', class: 'Alkali metal', ionizationEnergy: 4.177, electronegativity: 0.82, atomicRadius: 303, electronAffinity: 46.3, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 5s1', chemicalReactivity: 'Highly reactive, especially with water', metalOrNonMetal: 'Metal', group: 'Group 1 (Alkali metals)' },
+            38: { name: 'Strontium', class: 'Alkaline earth metal', ionizationEnergy: 5.694, electronegativity: 0.95, atomicRadius: 249, electronAffinity: 5.0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 4p6 5s2', chemicalReactivity: 'Reacts with water', metalOrNonMetal: 'Metal', group: 'Group 2 (Alkaline earth metals)' },
+            39: { name: 'Yttrium', class: 'Transition metal', ionizationEnergy: 6.217, electronegativity: 1.22, atomicRadius: 211, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d1 4s2', chemicalReactivity: 'Reacts slowly with air', metalOrNonMetal: 'Metal', group: 'Group 3 (Scandium group)' },
+            40: { name: 'Zirconium', class: 'Transition metal', ionizationEnergy: 6.634, electronegativity: 1.33, atomicRadius: 160, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d2 4d2', chemicalReactivity: 'Resistant to corrosion', metalOrNonMetal: 'Metal', group: 'Group 4 (Titanium group)' },
+            41: { name: 'Niobium', class: 'Transition metal', ionizationEnergy: 6.758, electronegativity: 1.60, atomicRadius: 146, electronAffinity: 50.0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d3 4d3', chemicalReactivity: 'Resistant to oxidation', metalOrNonMetal: 'Metal', group: 'Group 5 (Vanadium group)' },
+            42: { name: 'Molybdenum', class: 'Transition metal', ionizationEnergy: 7.092, electronegativity: 2.16, atomicRadius: 139, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d4 4d4', chemicalReactivity: 'Highly resistant to corrosion', metalOrNonMetal: 'Metal', group: 'Group 6 (Chromium group)' },
+            43: { name: 'Technetium', class: 'Transition metal', ionizationEnergy: 7.282, electronegativity: 1.9, atomicRadius: 137, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d5 4d5', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 7 (Manganese group)' },
+            44: { name: 'Ruthenium', class: 'Transition metal', ionizationEnergy: 7.360, electronegativity: 2.2, atomicRadius: 136, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d6 4d4', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 8 (Iron group)' },
+            45: { name: 'Rhodium', class: 'Transition metal', ionizationEnergy: 7.459, electronegativity: 2.28, atomicRadius: 135, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d7 4d5', chemicalReactivity: 'Does not react easily with oxygen', metalOrNonMetal: 'Metal', group: 'Group 9 (Cobalt group)' },
+            46: { name: 'Palladium', class: 'Transition metal', ionizationEnergy: 8.337, electronegativity: 2.20, atomicRadius: 137, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4d10', chemicalReactivity: 'Very resistant to oxidation', metalOrNonMetal: 'Metal', group: 'Group 10 (Nickel group)' },
+            47: { name: 'Silver', class: 'Transition metal', ionizationEnergy: 7.576, electronegativity: 1.93, atomicRadius: 144, electronAffinity: 125, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s1', chemicalReactivity: 'Reacts slowly with oxygen', metalOrNonMetal: 'Metal', group: 'Group 11 (Copper group)' },
+            48: { name: 'Cadmium', class: 'Transition metal', ionizationEnergy: 8.993, electronegativity: 1.69, atomicRadius: 151, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2', chemicalReactivity: 'Reacts with acids to release hydrogen', metalOrNonMetal: 'Metal', group: 'Group 12 (Zinc group)' },
+            49: { name: 'Indium', class: 'Post-transition metal', ionizationEnergy: 5.786, electronegativity: 1.78, atomicRadius: 193, electronAffinity: 29.0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p1', chemicalReactivity: 'Reacts with acids and halogens', metalOrNonMetal: 'Metal', group: 'Group 13 (Boron group)' },
+            50: { name: 'Tin', class: 'Post-transition metal', ionizationEnergy: 7.344, electronegativity: 1.96, atomicRadius: 145, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen to form an oxide layer', metalOrNonMetal: 'Metal', group: 'Group 14 (Carbon group)' },
+            51: { name: 'Antimony', class: 'Metalloid', ionizationEnergy: 8.608, electronegativity: 2.05, atomicRadius: 141, electronAffinity: 103.0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen and halogens', metalOrNonMetal: 'Metalloid', group: 'Group 15 (Nitrogen group)' },
+            52: { name: 'Tellurium', class: 'Metalloid', ionizationEnergy: 9.009, electronegativity: 2.01, atomicRadius: 139, electronAffinity: 190.2, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with metals and oxygen', metalOrNonMetal: 'Metalloid', group: 'Group 16 (Oxygen group)' },
+            53: { name: 'Iodine', class: 'Halogen', ionizationEnergy: 10.451, electronegativity: 2.66, atomicRadius: 140, electronAffinity: 295.0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with metals to form salts', metalOrNonMetal: 'Non-metal', group: 'Group 17 (Halogens)' },
+            54: { name: 'Xenon', class: 'Noble gas', ionizationEnergy: 12.129, electronegativity: null, atomicRadius: 140, electronAffinity: null, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Non-reactive', metalOrNonMetal: 'Non-metal', group: 'Group 18 (Noble gases)' },
+            55: { name: 'Cesium', class: 'Alkali metal', ionizationEnergy: 3.894, electronegativity: 0.79, atomicRadius: 298, electronAffinity: 45.5, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 5s1', chemicalReactivity: 'Highly reactive, especially with water', metalOrNonMetal: 'Metal', group: 'Group 1 (Alkali metals)' },
+            56: { name: 'Barium', class: 'Alkaline earth metal', ionizationEnergy: 5.211, electronegativity: 0.89, atomicRadius: 253, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 4p6 5s2', chemicalReactivity: 'Reacts with water', metalOrNonMetal: 'Metal', group: 'Group 2 (Alkaline earth metals)' },
+            57: { name: 'Lanthanum', class: 'Lanthanide', ionizationEnergy: 5.576, electronegativity: 1.10, atomicRadius: 195, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2', chemicalReactivity: 'Reacts with water', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            58: { name: 'Cerium', class: 'Lanthanide', ionizationEnergy: 5.538, electronegativity: 1.12, atomicRadius: 182, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            59: { name: 'Praseodymium', class: 'Lanthanide', ionizationEnergy: 5.473, electronegativity: 1.13, atomicRadius: 182, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            60: { name: 'Neodymium', class: 'Lanthanide', ionizationEnergy: 5.525, electronegativity: 1.14, atomicRadius: 182, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            61: { name: 'Promethium', class: 'Lanthanide', ionizationEnergy: 5.582, electronegativity: 1.13, atomicRadius: 182, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            62: { name: 'Samarium', class: 'Lanthanide', ionizationEnergy: 5.643, electronegativity: 1.17, atomicRadius: 180, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            63: { name: 'Europium', class: 'Lanthanide', ionizationEnergy: 5.670, electronegativity: 1.20, atomicRadius: 180, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            64: { name: 'Gadolinium', class: 'Lanthanide', ionizationEnergy: 6.150, electronegativity: 1.20, atomicRadius: 180, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            65: { name: 'Terbium', class: 'Lanthanide', ionizationEnergy: 5.868, electronegativity: 1.10, atomicRadius: 179, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            66: { name: 'Dysprosium', class: 'Lanthanide', ionizationEnergy: 5.939, electronegativity: 1.22, atomicRadius: 179, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            67: { name: 'Holmium', class: 'Lanthanide', ionizationEnergy: 6.021, electronegativity: 1.23, atomicRadius: 179, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            68: { name: 'Erbium', class: 'Lanthanide', ionizationEnergy: 6.107, electronegativity: 1.24, atomicRadius: 178, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            69: { name: 'Thulium', class: 'Lanthanide', ionizationEnergy: 6.180, electronegativity: 1.25, atomicRadius: 177, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            70: { name: 'Ytterbium', class: 'Lanthanide', ionizationEnergy: 6.254, electronegativity: 1.10, atomicRadius: 176, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            71: { name: 'Lutetium', class: 'Lanthanide', ionizationEnergy: 5.425, electronegativity: 1.27, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Lanthanides' },
+            72: { name: 'Hafnium', class: 'Transition metal', ionizationEnergy: 6.825, electronegativity: 1.3, atomicRadius: 159, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5d2', chemicalReactivity: 'Resistant to corrosion', metalOrNonMetal: 'Metal', group: 'Group 4 (Titanium group)' },
+            73: { name: 'Tantalum', class: 'Transition metal', ionizationEnergy: 7.549, electronegativity: 1.5, atomicRadius: 146, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5d3', chemicalReactivity: 'Highly resistant to corrosion', metalOrNonMetal: 'Metal', group: 'Group 5 (Vanadium group)' },
+            74: { name: 'Tungsten', class: 'Transition metal', ionizationEnergy: 7.864, electronegativity: 2.36, atomicRadius: 137, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5d4', chemicalReactivity: 'Highly resistant to corrosion', metalOrNonMetal: 'Metal', group: 'Group 6 (Chromium group)' },
+            75: { name: 'Rhenium', class: 'Transition metal', ionizationEnergy: 7.860, electronegativity: 1.9, atomicRadius: 137, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5d5', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 7 (Manganese group)' },
+            76: { name: 'Osmium', class: 'Transition metal', ionizationEnergy: 8.438, electronegativity: 2.2, atomicRadius: 132, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5d6', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 8 (Iron group)' },
+            77: { name: 'Iridium', class: 'Transition metal', ionizationEnergy: 8.968, electronegativity: 2.2, atomicRadius: 139, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5d7', chemicalReactivity: 'Resistant to corrosion', metalOrNonMetal: 'Metal', group: 'Group 9 (Cobalt group)' },
+            78: { name: 'Platinum', class: 'Transition metal', ionizationEnergy: 8.958, electronegativity: 2.28, atomicRadius: 139, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5d8', chemicalReactivity: 'Resistant to corrosion', metalOrNonMetal: 'Metal', group: 'Group 10 (Nickel group)' },
+            79: { name: 'Gold', class: 'Transition metal', ionizationEnergy: 9.225, electronegativity: 2.54, atomicRadius: 144, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s1 4d10', chemicalReactivity: 'Resistant to corrosion', metalOrNonMetal: 'Metal', group: 'Group 11 (Copper group)' },
+            80: { name: 'Mercury', class: 'Transition metal', ionizationEnergy: 10.437, electronegativity: 2.00, atomicRadius: 150, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2', chemicalReactivity: 'Resistant to corrosion', metalOrNonMetal: 'Metal', group: 'Group 12 (Zinc group)' },
+            81: { name: 'Thallium', class: 'Post-transition metal', ionizationEnergy: 6.108, electronegativity: 1.62, atomicRadius: 196, electronAffinity: 40.0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 13 (Boron group)' },
+            82: { name: 'Lead', class: 'Post-transition metal', ionizationEnergy: 7.416, electronegativity: 2.33, atomicRadius: 202, electronAffinity: 23.6, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with acids', metalOrNonMetal: 'Metal', group: 'Group 14 (Carbon group)' },
+            83: { name: 'Bismuth', class: 'Post-transition metal', ionizationEnergy: 7.289, electronegativity: 2.02, atomicRadius: 207, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 15 (Nitrogen group)' },
+            84: { name: 'Polonium', class: 'Metalloid', ionizationEnergy: 8.417, electronegativity: 2.00, atomicRadius: 145, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 4p6 5s2 4d10', chemicalReactivity: 'Reacts with metals', metalOrNonMetal: 'Metalloid', group: 'Group 16 (Oxygen group)' },
+            85: { name: 'Astatine', class: 'Halogen', ionizationEnergy: 9.302, electronegativity: 2.2, atomicRadius: 150, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with metals', metalOrNonMetal: 'Non-metal', group: 'Group 17 (Halogens)' },
+            86: { name: 'Radon', class: 'Noble gas', ionizationEnergy: 10.748, electronegativity: 0, atomicRadius: 150, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2', chemicalReactivity: 'Radioactive', metalOrNonMetal: 'Non-metal', group: 'Group 18 (Noble gases)' },
+            87: { name: 'Francium', class: 'Alkali metal', ionizationEnergy: 4.070, electronegativity: 0.7, atomicRadius: 265, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Highly reactive', metalOrNonMetal: 'Metal', group: 'Group 1 (Alkali metals)' },
+            88: { name: 'Radium', class: 'Alkaline earth metal', ionizationEnergy: 5.278, electronegativity: 0.9, atomicRadius: 215, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Highly reactive', metalOrNonMetal: 'Metal', group: 'Group 2 (Alkaline earth metals)' },
+            89: { name: 'Actinium', class: 'Actinide', ionizationEnergy: 5.17, electronegativity: 1.1, atomicRadius: 180, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            90: { name: 'Thorium', class: 'Actinide', ionizationEnergy: 6.306, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f0', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            91: { name: 'Protactinium', class: 'Actinide', ionizationEnergy: 5.89, electronegativity: 1.5, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f2', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            92: { name: 'Uranium', class: 'Actinide', ionizationEnergy: 6.194, electronegativity: 1.38, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f3', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            93: { name: 'Neptunium', class: 'Actinide', ionizationEnergy: 6.265, electronegativity: 1.36, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f4', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            94: { name: 'Plutonium', class: 'Actinide', ionizationEnergy: 6.026, electronegativity: 1.28, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f5', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            95: { name: 'Americium', class: 'Actinide', ionizationEnergy: 5.973, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f6', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            96: { name: 'Curium', class: 'Actinide', ionizationEnergy: 5.991, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f7', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            97: { name: 'Berkelium', class: 'Actinide', ionizationEnergy: 6.227, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f9', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            98: { name: 'Californium', class: 'Actinide', ionizationEnergy: 6.281, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            99: { name: 'Einsteinium', class: 'Actinide', ionizationEnergy: 6.42, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f11', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            100: { name: 'Fermium', class: 'Actinide', ionizationEnergy: 6.50, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f12', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            101: { name: 'Mendelevium', class: 'Actinide', ionizationEnergy: 6.58, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f13', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            102: { name: 'Nobelium', class: 'Actinide', ionizationEnergy: 6.65, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            103: { name: 'Lawrencium', class: 'Actinide', ionizationEnergy: 6.56, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d1', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Actinides' },
+            104: { name: 'Rutherfordium', class: 'Transition metal', ionizationEnergy: 6.3, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d2', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 4 (Titanium group)' },
+            105: { name: 'Dubnium', class: 'Transition metal', ionizationEnergy: 6.7, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d3', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 5 (Vanadium group)' },
+            106: { name: 'Seaborgium', class: 'Transition metal', ionizationEnergy: 6.9, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d4', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 6 (Chromium group)' },
+            107: { name: 'Bohrium', class: 'Transition metal', ionizationEnergy: 6.9, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d5', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 7 (Manganese group)' },
+            108: { name: 'Hassium', class: 'Transition metal', ionizationEnergy: 6.9, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d6', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 8 (Iron group)' },
+            109: { name: 'Meitnerium', class: 'Transition metal', ionizationEnergy: 7.0, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d7', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 9 (Cobalt group)' },
+            110: { name: 'Darmstadtium', class: 'Transition metal', ionizationEnergy: 7.0, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d8', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 10 (Nickel group)' },
+            111: { name: 'Roentgenium', class: 'Transition metal', ionizationEnergy: 7.0, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d9', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 11 (Copper group)' },
+            112: { name: 'Copernicium', class: 'Transition metal', ionizationEnergy: 7.0, electronegativity: 1.3, atomicRadius: 175, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d10', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 12 (Zinc group)' },
+            113: { name: 'Nihonium', class: 'Post-transition metal', ionizationEnergy: 6.5, electronegativity: 1.6, atomicRadius: 170, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d10 7s2', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 13 (Boron group)' },
+            114: { name: 'Flerovium', class: 'Post-transition metal', ionizationEnergy: 6.0, electronegativity: 1.6, atomicRadius: 160, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d10 7s2', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 14 (Carbon group)' },
+            115: { name: 'Moscovium', class: 'Post-transition metal', ionizationEnergy: 6.0, electronegativity: 1.6, atomicRadius: 150, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d10 7s2', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 15 (Nitrogen group)' },
+            116: { name: 'Livermorium', class: 'Post-transition metal', ionizationEnergy: 6.0, electronegativity: 1.6, atomicRadius: 145, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d10 7s2', chemicalReactivity: 'Reacts with oxygen', metalOrNonMetal: 'Metal', group: 'Group 16 (Oxygen group)' },
+            117: { name: 'Tennessine', class: 'Halogen', ionizationEnergy: 7.0, electronegativity: 2.0, atomicRadius: 140, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d10 7s2 5g1', chemicalReactivity: 'Reacts with metals', metalOrNonMetal: 'Non-metal', group: 'Group 17 (Halogens)' },
+            118: { name: 'Oganesson', class: 'Noble gas', ionizationEnergy: 7.4, electronegativity: 0, atomicRadius: 140, electronAffinity: 0, electronConfiguration: '1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5f14 6d10 7s2 5g2', chemicalReactivity: 'Inert', metalOrNonMetal: 'Non-metal', group: 'Group 18 (Noble gases)' }
+
+            // Remaining elements up to 118 can be added similarly...
+        };
+
+        function lookupElement() {
+            const atomicNumber = parseInt(document.getElementById('atomicNumber').value);
+            const resultDiv = document.getElementById('result');
+            
+            if (periodicTable[atomicNumber]) {
+                const element = periodicTable[atomicNumber];
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <h2>Element: ${element.name}</h2>
+                    <p><strong>Class:</strong> ${element.class}</p>
+                    <p><strong>Ionization Energy:</strong> ${element.ionizationEnergy} eV</p>
+                    <p><strong>Electronegativity:</strong> ${element.electronegativity}</p>
+                    <p><strong>Atomic Radius:</strong> ${element.atomicRadius} pm</p>
+                    <p><strong>Electron Affinity:</strong> ${element.electronAffinity} kJ/mol</p>
+                    <p><strong>Electron Configuration:</strong> ${element.electronConfiguration}</p>
+                    <p><strong>Chemical Reactivity:</strong> ${element.chemicalReactivity}</p>
+                    <p><strong>Metal or Non-metal:</strong> ${element.metalOrNonMetal}</p>
+                    <p><strong>Group:</strong> ${element.group}</p>
+                    <img src="https://source.unsplash.com/100x100/?atom" alt="Element Image">
+                `;
+            } else {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `<p>No element found with that atomic number.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Links</title>
+</head>
+<body>
+    <h1>Connect with me on Social Media!</h1>
+
+    <!-- Instagram Link -->
+    <a href="https://www.instagram.com/subhajit04sen?igsh=Y2c2NWhmdzZ2c2E4" target="_blank">
+        <button>Follow Me on Instagram</button>
+    </a>
+
+    <!-- Other social media links can go here -->
+</body>
+</html>
+
